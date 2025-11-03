@@ -1,0 +1,6 @@
+services:
+  opencv-calibrate-service:
+    build: .
+    container_name: opencv-calibrate-service
+    ports:
+      - "8080:80"

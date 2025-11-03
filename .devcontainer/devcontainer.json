@@ -1,0 +1,24 @@
+{
+  "name": "opencv-calibrate-dev-container",
+  "build": {
+    "dockerfile": "../Dockerfile.devcontainer"
+  },
+  "forwardPorts": [8000],
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "ms-python.python",
+        "ms-vscode.cpptools",
+        "ms-python.black-formatter",
+        "streetsidesoftware.code-spell-checker",
+        "davidanson.vscode-markdownlint",
+        "esbenp.prettier-vscode",
+        "humao.rest-client"
+      ]
+    }
+  },
+  "postCreateCommand": "uvicorn app.main:app --reload"
+}
