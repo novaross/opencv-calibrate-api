@@ -9,7 +9,6 @@ def calibrate(calibrateRequest: CalibrateRequest):
     log.debug("Calibrate request received")
     image = convertBase64ToImage(calibration_image_base64)
     chessboard_spec = calibrateRequest.chessboardSpec
-    world_points_mm = calibrateRequest.worldPoints
 
     # get calibration parameters based on image
     mtx, dist, objpoints, imgpoints = utils.calibrate_camera(image, chessboard_spec)
@@ -25,26 +24,31 @@ def calibrate(calibrateRequest: CalibrateRequest):
 
     # un distort and detect corners on the undistorted image
     undistorted_image, new_mtx = utils.undistort_image(image, mtx, dist)
-    log.debug("new_mtx: {}".format(new_mtx))
-    detected_pixel_corners = utils.find_chessboard_corners(
-        undistorted_image, chessboard_spec
-    )
+    detected_corners = utils.find_chessboard_corners(undistorted_image, chessboard_spec)
 
     # calculate the homography matrix
+    world_points_mm = calibrateRequest.worldPoints
     log.debug("Calculating homography matrix...")
-    homography_matrix = utils.compute_homography(
-        world_points_mm, detected_pixel_corners
-    )
+    homography_matrix = utils.find_homography(world_points_mm, detected_corners)
     log.debug("Homography Matrix: {}".format(homography_matrix))
 
-    homography_matrix_inverted = utils.invert_homography(homography_matrix)
-    log.debug("Homography Matrix Inverted: {}".format(homography_matrix_inverted))
+    hmi = utils.invert_homography(homography_matrix)
+    log.debug("Homography Matrix Inverted: {}".format(hmi))
+
+    # format output
+    decimal_places = 10
+    format_spec = f".{decimal_places}f"
+    mtx_formatted = [[f"{v:{format_spec}}" for v in row] for row in mtx.tolist()]
+    dist_formatted = [f"{v:{format_spec}}" for v in dist.flatten().tolist()]
+    hm_formatted = [f"{v:{format_spec}}" for v in homography_matrix.flatten().tolist()]
+    hmi_formatted = [f"{v:{format_spec}}" for v in hmi.flatten().tolist()]
 
     calibrateResponse = CalibrateResponse(
         message="Calibration performed successfully",
-        cameraMatrix=mtx.tolist(),
-        dist=dist.flatten().tolist(),
-        hmi=homography_matrix_inverted.flatten().tolist()
+        mtx=mtx_formatted,
+        dist=dist_formatted,
+        hm=hm_formatted,
+        hmi=hmi_formatted,
     )
 
     return calibrateResponse

@@ -29,8 +29,8 @@ def calibrate_camera(img, chessboard_spec):
     if ret == True:
         log.debug("Found corners")
         objpoints.append(objp)
-        corners = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
-        imgpoints.append(corners)
+        corners2 = cv.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
+        imgpoints.append(corners2)
 
         ret, mtx, dist, rvecs, tvecs = cv.calibrateCamera(
             objpoints, imgpoints, gray.shape[::-1], None, None
@@ -70,12 +70,12 @@ def find_chessboard_corners(image, chessboard_spec):
 
 def undistort_image(image, mtx, dist):
     h, w = image.shape[:2]
-    new_mtx, _ = cv.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
+    new_mtx, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w, h), 1, (w, h))
     undistorted = cv.undistort(image, mtx, dist, None, new_mtx)
     return undistorted, new_mtx
 
 
-def compute_homography(world_points_mm, imgpoints):
+def find_homography(world_points_mm, imgpoints):
     # convert world_points_mm to objpoints
     # array of objects to np.array
     point_tuples = [[point.x, point.y] for point in world_points_mm]

@@ -1,6 +1,6 @@
 # OpenCv Camera Calibration via REST API
 
-Open CV Camera Calibration Functionality provided as REST API.  
+OpenCV Camera Calibration Functionality as REST API.  
 I am not an OpenCV nor a Python expert, so any feedback is welcome!
 
 ## Getting Started
@@ -31,11 +31,11 @@ You can access the API at `http://localhost:8000`.
 
 For testing purposes, the [endpoints.http](endpoints.http) file contains a request with a base64 encoded image from assets, including chessboard specification and sample world points in mm.
 
-![alt text](assets/chessboard-500x500.jpg)
+![chessboard](assets/chessboard-500x500.jpg)
 
 During calibration, the detected corners are drawn on the image and saved to `output/image_detected_corners.jpg`.
 
-![alt text](output/image_detected_corners.jpg)
+![chessboard-detected](output/image_detected_corners.jpg)
 
 ## References
 
